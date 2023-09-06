@@ -1,5 +1,6 @@
 package com.dayone.service;
 
+import com.dayone.exception.impl.AlreadyExistUserException;
 import com.dayone.model.Auth;
 import com.dayone.model.MemberEntity;
 import com.dayone.persist.MemberRepository;
@@ -27,7 +28,7 @@ public class MemberService implements UserDetailsService {
     public MemberEntity register(Auth.SignUp member) {
         boolean exists = this.memberRepository.existsByUsername(member.getUsername());
         if (exists) {
-            throw new RuntimeException("이미 사용중인 아이디입니다");
+            throw new AlreadyExistUserException();
         }
 
         member.setPassword(this.passwordEncoder.encode(member.getPassword()));
