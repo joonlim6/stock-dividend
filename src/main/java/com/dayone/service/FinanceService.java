@@ -3,6 +3,7 @@ package com.dayone.service;
 import com.dayone.model.Company;
 import com.dayone.model.Dividend;
 import com.dayone.model.ScrapedResult;
+import com.dayone.model.constants.CacheKey;
 import com.dayone.persist.CompanyRepository;
 import com.dayone.persist.DividendRepository;
 import com.dayone.persist.entity.CompanyEntity;
@@ -10,8 +11,11 @@ import com.dayone.persist.entity.DividendEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FinanceService {
@@ -19,7 +23,9 @@ public class FinanceService {
     private final CompanyRepository companyRepository;
     private final DividendRepository dividendRepository;
 
+    @Cacheable(key = "#companyName", value = CacheKey.KEY_FINANCE)
     public ScrapedResult getDividendByCompanyName(String companyName) {
+        log.info("search company -> " + companyName);
 
         CompanyEntity company = this.companyRepository.findByName(companyName)
             .orElseThrow(() -> new RuntimeException("회사가 존재하지 않습니다"));
